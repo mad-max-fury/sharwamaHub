@@ -44,6 +44,8 @@ const Login = () => {
         },
       });
       console.log(newUser);
+
+      //set user to redux store
       //   dispatch(setCredentials({ ...userData, email }));
       //   navigate("/dashboard");
     } catch {}

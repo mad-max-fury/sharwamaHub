@@ -91,7 +91,8 @@ const Form = ({ showModal, setShowModal, amT }) => {
   const cart = useSelector(getCartItems);
   const dispatch = useDispatch();
 
-  const publicKey = "pk_test_7c5122bd456a581f702dfbbb678e93cc7d9d073e";
+  // const publicKey = "pk_test_7c5122bd456a581f702dfbbb678e93cc7d9d073e";
+  const publicKey = "";
 
   const amount = amT; // Remember, set in kobo!
   const [email, setEmail] = useState("");
