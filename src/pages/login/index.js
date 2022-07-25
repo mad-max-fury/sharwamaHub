@@ -36,18 +36,24 @@ const Login = () => {
   const onSubmit = async (data) => {
     // dispatch(authAsync(data));
     try {
+      // Set CSRF Cookie
       await sharwamaHub.get("/sanctum/csrf-cookie");
-      const newData = await sharwamaHub.post("/login", data);
-      const newUser = await sharwamaHub.get("/user", {
+      // Hist login endpoint with user credentials
+      const newData = await sharwamaHub.post("/api/v1/login", data);
+      // pull access token from return value
+      const { access_token } = newData.data;
+      // Hit user endpoint with access token
+      const newUser = await sharwamaHub.get("/api/v1/user", {
         headers: {
-          Authorization: `Bearer ${newData?.token}`,
+          Authorization: `Bearer ${access_token}`,
         },
       });
-      console.log(newUser);
 
-      //set user to redux store
-      //   dispatch(setCredentials({ ...userData, email }));
-      //   navigate("/dashboard");
+      console.log(newUser.data);
+
+      // set user to redux store
+        dispatch(setCredentials({ ...newUser.data, email }));
+        navigate("/dashboard");
     } catch {}
   };
 
