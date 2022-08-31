@@ -3,24 +3,16 @@ import styled from "styled-components";
 import { colors } from "../../colors";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getError,
-  getIsLoggedIn,
-  getToken,
-  setCredentials,
-} from "../../features/auth/loginslice";
+import { getError, setCredentials } from "../../features/auth/loginslice";
 import { useLoginMutation } from "../../features/auth/authApiSlice";
 import { useNavigate } from "react-router-dom";
-import { apiSlice } from "../../api/apislice";
 import sharwamaHub from "../../api";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const userRef = useRef();
-  const errRef = useRef();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errMsg, setErrMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -28,14 +20,12 @@ const Login = () => {
     watch,
     formState: { errors },
   } = useForm();
-  const [login, { isLoading }] = useLoginMutation();
-  const isLoggedIn = useSelector(getIsLoggedIn);
+  const [login] = useLoginMutation();
   const error = useSelector(getError);
-  const token = useSelector(getToken);
 
   const onSubmit = async (data) => {
-    // dispatch(authAsync(data));
     try {
+      setIsLoading(true);
       // Set CSRF Cookie
       await sharwamaHub.get("/sanctum/csrf-cookie");
       // Hist login endpoint with user credentials
@@ -49,12 +39,11 @@ const Login = () => {
         },
       });
 
-      console.log(newUser.data);
-
       // set user to redux store
-        dispatch(setCredentials({ ...newUser.data, email }));
-        navigate("/dashboard");
+      dispatch(setCredentials({ user: newUser.data, access_token }));
+      navigate("/dashboard");
     } catch {}
+    setIsLoading(false);
   };
 
   return (
@@ -68,6 +57,7 @@ const Login = () => {
               type="email"
               name="email"
               placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
               {...register("email", { required: true })}
             />
             {errors.email && <span>username is required</span>}
@@ -77,6 +67,7 @@ const Login = () => {
               type="password"
               name="password"
               placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
               {...register("password", { required: true })}
               required
             />

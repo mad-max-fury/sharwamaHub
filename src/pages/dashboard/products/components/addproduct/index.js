@@ -5,28 +5,34 @@ import * as ReactDOM from "react-dom";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 
 import axios from "axios";
+import sharwamaHub from "../../../../../api";
+import { useSelector } from "react-redux";
+import { getToken } from "../../../../../features/auth/loginslice";
 
 const AddProduct = ({ showModal, setShowModal }) => {
   const fileRef = useRef();
+  const token = useSelector(getToken);
   const [img, setImg] = useState(null);
   const [preview, setPreview] = useState(null);
 
   const handleImage = async (e) => {
     setImg(e.target.files[0]);
+
     const fd = new FormData();
     fd.append("image", e.target.files[0], e.target.files[0].name);
-    const res = await axios.post(
-      "https://shawarmahub-api.herokuapp.com/upload",
-      fd,
-      {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          console.log(percentCompleted);
-        },
-      }
-    );
+
+    const res = await sharwamaHub.post("/api/v1/upload", fd, {
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        console.log(percentCompleted);
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    });
     const { data } = res;
     console.log(data.path);
   };

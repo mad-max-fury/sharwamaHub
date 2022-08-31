@@ -7,10 +7,12 @@ import { Button } from "../button";
 import { colors } from "../../colors";
 import { BsArrowRepeat, BsWhatsapp } from "react-icons/bs";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
 
-  const handleClick = () => setShowToast(true);
+  const handleClick = () => navigate("/shop");
   return (
     <HeroSectionWrap>
       <Inner>
@@ -21,12 +23,12 @@ const HeroSection = () => {
               <br /> Sharwama Delivered <br />
               <span> Hot</span> & <span>Fresh</span>
             </h1>
-            <p>
+            {/* <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               Vestibulum eget purus, nullam ipsum amet in sit cursus nibh.
               Tellus, aenean vitae aenean pharetra tellus in. Cursus vitae, nec,
               u
-            </p>
+            </p> */}
           </TextUp>
           <BtnWrap>
             <span onClick={handleClick}>

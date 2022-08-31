@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logout } from "../features/auth/loginslice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://sharwamahub-api.test/api/v1",
+  baseUrl: "https://api.sharwamahub.com/api/v1",
   credentials: "include",
   headers: {
     "X-Requested-With": "XMLHttpRequest",

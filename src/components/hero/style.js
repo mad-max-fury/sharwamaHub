@@ -32,7 +32,7 @@ export const HeroSectionWrap = styled.section`
 `;
 export const BgWrap = styled.div`
   position: relative;
-  border-radius: 16px;
+  border-radius: 56px;
   width: 40%;
   height: 65vh;
   max-height: 30rem;
@@ -44,7 +44,7 @@ export const BgWrap = styled.div`
     width: 100%;
     object-fit: contain;
     bottom: -70px;
-    right: -2px;
+    right: -0.5px;
     z-index: 1;
   }
   @media screen and (max-width: 650px) {
@@ -133,10 +133,12 @@ export const TextUp = styled.div`
     font-size: 2.8rem;
     margin: 0;
     padding: 0;
+    font-weight: 900 !important;
+    line-height: 1.2;
 
     & > span {
       font-size: 2.8rem;
-      font-weight: bold;
+      font-weight: 900 !important;
 
       color: ${colors.secondary};
     }

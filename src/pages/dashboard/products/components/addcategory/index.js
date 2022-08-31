@@ -3,26 +3,68 @@ import styled from "styled-components";
 import { colors } from "../../../../../colors";
 import * as ReactDOM from "react-dom";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
+import { useForm } from "react-hook-form";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import sharwamaHub from "../../../../../api";
+import { getToken } from "../../../../../features/auth/loginslice";
 
 const CreateCate = ({ showCreateModal, setShowCreateModal }) => {
-  const root = ReactDOM.createRoot(document.getElementById("createportal"));
+  const dispatch = useDispatch();
+  const token = useSelector(getToken);
+  const [isLoading, setIsLoading] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm();
+  const onSubmit = async (data) => {
+    try {
+      setIsLoading(true);
+      console.log(token);
+      console.log(data);
+      const res = await sharwamaHub.post("/api/v1/categories", data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
 
-  return root.render(
+  return (
     <>
       <Wrap showCreateModal={showCreateModal}>
-        <FormContainer showCreateModal={showCreateModal}>
+        <FormContainer
+          showCreateModal={showCreateModal}
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <FormHeader>
             <FormTitle>Add Category</FormTitle>
             <Close onClick={() => setShowCreateModal(false)} />
           </FormHeader>
           <FormBody>
             <FormRow>
-              <FormInput type="text" placeholder="Name of category" />
+              <FormInput
+                type="text"
+                value={categoryName}
+                name="title"
+                {...register("title", { required: true })}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="Name of category"
+              />
             </FormRow>
           </FormBody>
           <FormFooter>
-            <FormButton>Create</FormButton>
+            <FormButton type="submit" disabled={categoryName === ""}>
+              {isSubmitting ? "creating" : "Create"}
+            </FormButton>
           </FormFooter>
         </FormContainer>
       </Wrap>
@@ -59,7 +101,7 @@ const Wrap = styled.main`
   
     `}
 `;
-const FormContainer = styled.div`
+const FormContainer = styled.form`
   width: 30vw;
   border-radius: 10px;
   height: fit-content;

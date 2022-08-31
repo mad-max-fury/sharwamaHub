@@ -9,12 +9,23 @@ import {
   getProductsError,
   getProductsLoading,
 } from "../../features/product/productslice";
+
 const Shop = () => {
   const category = useSelector(getAllCategory);
   const products = useSelector(getAllProducts);
   const loading = useSelector(getProductsLoading);
   const error = useSelector(getProductsError);
-  const [tabs, setTabs] = useState(category[0]);
+  const [tabs, setTabs] = useState(0);
+
+  const sharwarma = products[0]?.sharwarma;
+  const burger = products[0]?.burger;
+  const smoothie = products[0]?.smoothie;
+  const sandwich = products[0]?.Sandwich;
+  const Popcorn = products[0]?.Popcorn;
+  const more = products[0]?.more;
+
+  const tabsContent = [sharwarma, burger, sandwich, Popcorn, smoothie, more];
+
   return (
     <>
       <ShowCaseWraps>
@@ -22,8 +33,8 @@ const Shop = () => {
           {[...category].map((item, i) => (
             <MButton
               key={i}
-              className={item === tabs ? "active" : null}
-              onClick={() => setTabs(item)}
+              className={i === tabs ? "active" : null}
+              onClick={() => setTabs(i)}
             >
               {item}
             </MButton>
@@ -35,9 +46,9 @@ const Shop = () => {
           ) : error ? (
             <div>Error</div>
           ) : (
-            products.map((item) => (
-              <ProductCard key={item.id} product={item} addToCartI />
-            ))
+            tabsContent[tabs]?.map((item) => {
+              return <ProductCard key={item.id} product={item} addToCartI />;
+            })
           )}
         </ShowCaseItem>
       </ShowCaseWraps>
@@ -124,6 +135,15 @@ export const MButtonWrap = styled.div`
 `;
 export const ShowCaseItem = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, minmax(300px, 1fr));
   grid-gap: 2rem;
+  @media screen and (max-width: 1201px) {
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+  }
+  @media screen and (max-width: 900px) {
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
+  }
+  @media screen and (max-width: 899px) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
 `;

@@ -15,7 +15,7 @@ const SideNav = () => {
   return (
     <SideBarWrap>
       <Profile>
-        <ProfileImg src="https://randomuser.me/api/portraits/" />
+        <ProfileImg src={user?.image} />
         <ProfileName>
           <Name>{user?.name} </Name>
           {/* <Surname>Anowor</Surname> */}

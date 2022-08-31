@@ -277,6 +277,23 @@ export const FormButton = styled(PaystackButton)`
     background-color: green;
   }
 `;
+export const FormButton2 = styled.button`
+  font-weight: 700;
+  font-size: clamp(0.9rem, 0.8vw, 1.4rem);
+  width: 100%;
+  height: clamp(3rem, 3.5vw, 3.5rem);
+  background-color: #adadad;
+  color: ${colors.white};
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: 0;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+`;
 export const Close = styled(IoMdClose)`
   position: absolute;
   top: -70%;

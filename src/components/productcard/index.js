@@ -1,17 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../colors";
 import { Button } from "../button";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../features/product/cartslice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  getCartItems,
+  removeFromCart,
+} from "../../features/product/cartslice";
 import { nanoid } from "@reduxjs/toolkit";
+import { set } from "react-hook-form";
 
-const ProductCard = ({ addToCartI, product }) => {
+const ProductCard = ({ addToCartI, product, src }) => {
+  const cart = useSelector(getCartItems);
   const dispatch = useDispatch();
+  const cartIndex = cart.findIndex((item) => item?.id === product?.id);
+  const currentItem = cart[cartIndex];
 
   const handleAddToCart = () => {
     dispatch(addToCart(product));
+  };
+  const handleAdd = (product) => {
+    dispatch(addToCart(product));
+  };
+  const handleRemove = (product) => {
+    dispatch(removeFromCart(product));
   };
 
   return (
@@ -22,9 +36,7 @@ const ProductCard = ({ addToCartI, product }) => {
       <CardInfo>
         <Details>
           <CardTitle>{product?.name}</CardTitle>
-          <CardDescription>
-            Regular (chicken or beef with one sausage).
-          </CardDescription>
+          <CardDescription>{product?.desc}</CardDescription>
         </Details>
 
         <AddToCartPrice>
@@ -32,16 +44,26 @@ const ProductCard = ({ addToCartI, product }) => {
             <CardPriceTag>&#8358; {product?.price}</CardPriceTag>
             <span>Per one</span>
           </CardPrice>
-          {addToCartI && (
-            <AddToCartButton onClick={handleAddToCart}>
-              <Button
-                text={"Add to cart"}
-                Icon={AiOutlineShoppingCart}
-                filled
-                size={"20"}
-                bgColor={colors.primary}
-              />
-            </AddToCartButton>
+          {[currentItem][0]?.quantity >= 1 ? (
+            <AddRemove>
+              <Remove onClick={() => handleRemove(product)}>-</Remove>
+              <Quantity>{[currentItem][0]?.quantity}</Quantity>
+              <Add onClick={() => handleAdd(product)}>+</Add>
+            </AddRemove>
+          ) : (
+            <>
+              {addToCartI && (
+                <AddToCartButton onClick={handleAddToCart}>
+                  <Button
+                    text={"Add to cart"}
+                    Icon={AiOutlineShoppingCart}
+                    filled
+                    size={"20"}
+                    bgColor={colors.primary}
+                  />
+                </AddToCartButton>
+              )}
+            </>
           )}
         </AddToCartPrice>
       </CardInfo>
@@ -69,12 +91,66 @@ const CardWrap = styled.div`
     cursor: pointer;
   }
 `;
-
+const AddRemove = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: fit-content;
+  justify-self: end;
+  gap: 0.5rem;
+`;
+const Remove = styled.div`
+  font-weight: 700;
+  font-size: clamp(1.4rem, 0.8vw, 1.4rem);
+  color: ${colors.secondary};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    color: ${colors.primary};
+  }
+  height: 2rem;
+  width: 2rem;
+  border: 2px solid ${colors.secondary};
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+`;
+const Quantity = styled.div`
+  font-weight: 700;
+  font-size: clamp(1.2rem, 0.8vw, 1.4rem);
+  color: ${colors.secondary};
+  height: 2rem;
+  width: fit-content;
+  padding: 0 0.5rem;
+  border: 2px solid ${colors.secondary};
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+`;
+const Add = styled.div`
+  font-weight: 700;
+  font-size: clamp(1.4rem, 0.8vw, 1.4rem);
+  color: ${colors.secondary};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    color: ${colors.primary};
+  }
+  height: 2rem;
+  width: 2rem;
+  border: 2px solid ${colors.secondary};
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+`;
 const CardImage = styled.div`
   height: 50%;
   width: 100%;
   border-radius: 18px;
-  background-color: #000;
   overflow: hidden;
   & > img {
     height: 100%;
@@ -92,12 +168,14 @@ const CardInfo = styled.div`
   justify-content: space-between;
 `;
 const CardTitle = styled.div`
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
   line-height: 1.8;
+  color: #333;
 `;
 const CardDescription = styled.div`
   font-size: 0.9rem;
+  font-weight: 300;
   color: grey;
 `;
 const CardPrice = styled.div`

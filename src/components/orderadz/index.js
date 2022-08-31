@@ -9,13 +9,16 @@ const OrderNow = () => {
     <OrderNowWrap>
       <Inner>
         <TextWrap>
-          <Heading>Simple Way To Order Your Sharwama</Heading>
+          <Heading>
+            Simple Way To Order
+            <br /> Your Sharwama
+          </Heading>
           <Paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing
-            <br /> elit. Ornare aenean mauris pharetra morbi
-            <br /> condimentum.
+            Your orders are given utmost priority when they
+            <br />
+            are sent to our DM via WhatsApp.
           </Paragraph>
-          <span>
+          <a href="https://api.whatsapp.com/send?phone=2349160359650">
             {" "}
             <Button
               text={"Order With Whatsapp Now"}
@@ -24,7 +27,7 @@ const OrderNow = () => {
               size={"20"}
               bgColor={colors.primary}
             />
-          </span>
+          </a>
         </TextWrap>
 
         <ImageWrap>
@@ -95,12 +98,14 @@ const TextWrap = styled.div`
   }
 `;
 const Heading = styled.h1`
-  font-size: clamp(2rem, 2vw, 3.8rem);
+  font-size: clamp(2.5rem, 2vw, 4.2rem);
   margin: 0;
-  line-height: 1;
-  font-weight: 700;
+  line-height: 1.2;
+  font-weight: 900;
   color: #000;
+  margin-bottom: 0.6rem;
 `;
+
 const Paragraph = styled.p`
   margin: 0;
   font-size: 1rem;

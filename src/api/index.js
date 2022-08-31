@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const sharwamaHub = axios.create({
-  baseURL: "http://sharwamahub-api.test",
+  baseURL: "https://api.sharwamahub.com/api/v1",
   headers: {
     "X-Requested-With": "XMLHttpRequest",
   },

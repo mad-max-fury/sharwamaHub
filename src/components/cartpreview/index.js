@@ -1,6 +1,8 @@
+import axios from "axios";
 import React, { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import sharwamaHub from "../../api";
 import {
   addToCart,
@@ -35,6 +37,7 @@ import {
   FormInput,
   FormFooter,
   FormButton,
+  FormButton2,
 } from "./styled";
 
 const CartPreview = ({ isModalOpen, onClose }) => {
@@ -61,7 +64,7 @@ const CartPreview = ({ isModalOpen, onClose }) => {
         <CartHeader>Cart Items ({cart.length})</CartHeader>
         <Items>
           {[...cart].map((item) => (
-            <Item key={item}>
+            <Item key={item?.id}>
               <ItemImg src={item?.image} />
               <ItemInfo>
                 <ItemName>{item?.name}</ItemName>
@@ -77,7 +80,15 @@ const CartPreview = ({ isModalOpen, onClose }) => {
         </Items>
         <CartFooter>
           <CartTotal>Total: &#8358;{cartTotalAmount}</CartTotal>
-          <CartButton onClick={() => setShowModal(true)}>Checkout</CartButton>
+          <CartButton
+            onClick={
+              cartTotalAmount === 0
+                ? () => toast.info("please add an item")
+                : () => setShowModal(true)
+            }
+          >
+            Checkout
+          </CartButton>
         </CartFooter>
       </CartContainer>
     </>,
@@ -91,18 +102,19 @@ const Form = ({ showModal, setShowModal, amT }) => {
   const cart = useSelector(getCartItems);
   const dispatch = useDispatch();
 
-  // const publicKey = "pk_test_7c5122bd456a581f702dfbbb678e93cc7d9d073e";
-  const publicKey = "";
+  const publicKey = "pk_test_7c5122bd456a581f702dfbbb678e93cc7d9d073e";
 
   const amount = amT; // Remember, set in kobo!
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
+  const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [makingReq, setMakingReq] = useState(false);
   const componentProps = {
     email,
     amount,
     metadata: {
-      name,
+      name: username,
       phone,
     },
     publicKey,
@@ -112,27 +124,32 @@ const Form = ({ showModal, setShowModal, amT }) => {
   };
   const handleSuccessPayement = async (e) => {
     const { reference, status, message } = e;
+    toast.loading("verifying payment");
+    setMakingReq(true);
     try {
-      const res = await sharwamaHub.post("/orders", {
-        user: [
-          {
-            name,
-            address: phone,
-            phone,
+      const res = await axios.post(
+        "https://api.sharwamahub.com/api/v1/orders",
+        {
+          transaction_id: reference,
+          orders: [...cart].map(({ id, name, quantity, price }) => {
+            return { name, quantity, amount: quantity * price };
+          }),
+          user: {
+            name: username,
+            address,
+            phonenumber: `+234${phone.substring(1, phone.length)}`,
           },
-        ],
-        orders: [...cart].map(({ id, quantity, price }) => {
-          return { id, quantity, amount: quantity * price };
-        }),
-        transaction_id: reference,
-      });
-      const data = res.json();
-      console.log(e);
+        }
+      );
       dispatch(emptyCart());
-      setEmail(" ");
-      setName(" ");
-      setPhone(" ");
+      setEmail("");
+      setName("");
+      setAddress("");
+      setPhone("");
       setShowModal(!showModal);
+      setMakingReq(false);
+      toast.dismiss();
+      toast.success(res?.data?.message + ", check your message");
     } catch {}
   };
   return (
@@ -148,6 +165,7 @@ const Form = ({ showModal, setShowModal, amT }) => {
             <FormInput
               type="text"
               placeholder="Name"
+              value={username}
               onChange={(e) => setName(e.target.value)}
             />
           </FormRow>
@@ -156,7 +174,17 @@ const Form = ({ showModal, setShowModal, amT }) => {
             <FormInput
               type="email"
               placeholder="Email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormRow>
+          <FormRow>
+            {/* <FormLabel>Name</FormLabel> */}
+            <FormInput
+              type="text"
+              placeholder="enter delivery address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
             />
           </FormRow>
           <FormRow>
@@ -164,12 +192,17 @@ const Form = ({ showModal, setShowModal, amT }) => {
             <FormInput
               type="number"
               placeholder="Phone"
+              value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
           </FormRow>
         </FormBody>
         <FormFooter>
-          <FormButton {...componentProps}>Order</FormButton>
+          {makingReq ? (
+            <FormButton2 disabled>Processing...</FormButton2>
+          ) : (
+            <FormButton {...componentProps}>Order</FormButton>
+          )}
         </FormFooter>
       </FormContainer>
     </Wrap>

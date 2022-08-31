@@ -6,7 +6,7 @@ import { AiOutlineShoppingCart, AiOutlineClose } from "react-icons/ai";
 import { FaBars } from "react-icons/fa";
 import { logo } from "../../assets";
 import { CartPreview } from "../cartpreview";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { useSelector } from "react-redux";
 import {
@@ -16,9 +16,11 @@ import {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const CartTotalAmount = useSelector(getCartTotalAmount);
   const CartTotalQuantity = useSelector(getCartTotalQuantity);
+  const path = window.location;
+  console.log(path);
   const scrollWithOffset = (el, offset) => {
     const elementPosition = el.offsetTop - offset;
     window.scroll({
@@ -65,26 +67,42 @@ const Navbar = () => {
           <NavItems isOpen={isOpen}>
             <ul>
               <li>
-                <LinkedH className="active" to={"/"}>
+                <LinkedH
+                  className={
+                    path.pathname === "/" && path.hash === "" && "active"
+                  }
+                  to={"/"}
+                >
                   Home
                 </LinkedH>
               </li>
               <li>
                 <LinkedH
                   to="/#menu"
-                  activeStyle
+                  className={
+                    path.pathname === "/" && path.hash === "#menu" && "active"
+                  }
                   scroll={(el) => scrollWithOffset(el, 120)}
                 >
                   Menu
                 </LinkedH>
               </li>
               <li>
-                <Linked to={"/shop"}>Shop</Linked>
+                <Linked
+                  to={"/shop"}
+                  className={path.pathname === "/shop" && "active"}
+                >
+                  Shop
+                </Linked>
               </li>
               <li>
                 <LinkedH
                   to={"/#contact"}
-                  activeStyle
+                  className={
+                    path.pathname === "/" &&
+                    path.hash === "#contact" &&
+                    "active"
+                  }
                   scroll={(el) => scrollWithOffset(el, 100)}
                 >
                   Contact us
@@ -102,7 +120,7 @@ const Navbar = () => {
                 <AiOutlineShoppingCart color="grey" size={"25px"} />
               </Cart>
             </div>
-            <div>
+            <div onClick={() => navigate("/shop")}>
               <Button
                 text={"Book Now"}
                 filled
