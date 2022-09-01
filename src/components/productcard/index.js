@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { colors } from "../../colors";
 import { Button } from "../button";
@@ -9,8 +9,7 @@ import {
   getCartItems,
   removeFromCart,
 } from "../../features/product/cartslice";
-import { nanoid } from "@reduxjs/toolkit";
-import { set } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ addToCartI, product, src }) => {
   const cart = useSelector(getCartItems);
@@ -20,6 +19,9 @@ const ProductCard = ({ addToCartI, product, src }) => {
 
   const handleAddToCart = () => {
     dispatch(addToCart(product));
+    toast.info(`${product.name} added to cart`, {
+      duration: 1000,
+    });
   };
   const handleAdd = (product) => {
     dispatch(addToCart(product));
@@ -31,7 +33,7 @@ const ProductCard = ({ addToCartI, product, src }) => {
   return (
     <CardWrap>
       <CardImage>
-        <img src={product?.image} />
+        <img src={product?.image} alt={` ${product?.name}`} />
       </CardImage>
       <CardInfo>
         <Details>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { colors } from "../../colors";
 import { Button } from "../button";
 import { AiOutlineShoppingCart, AiOutlineClose } from "react-icons/ai";
@@ -9,18 +9,13 @@ import { CartPreview } from "../cartpreview";
 import { Link, useNavigate } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { useSelector } from "react-redux";
-import {
-  getCartTotalAmount,
-  getCartTotalQuantity,
-} from "../../features/product/cartslice";
+import { getCartTotalQuantity } from "../../features/product/cartslice";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const CartTotalAmount = useSelector(getCartTotalAmount);
   const CartTotalQuantity = useSelector(getCartTotalQuantity);
   const path = window.location;
-  console.log(path);
   const scrollWithOffset = (el, offset) => {
     const elementPosition = el.offsetTop - offset;
     window.scroll({
@@ -72,6 +67,7 @@ const Navbar = () => {
                     path.pathname === "/" && path.hash === "" && "active"
                   }
                   to={"/"}
+                  onClick={() => setIsOpen(false)}
                 >
                   Home
                 </LinkedH>
@@ -83,6 +79,7 @@ const Navbar = () => {
                     path.pathname === "/" && path.hash === "#menu" && "active"
                   }
                   scroll={(el) => scrollWithOffset(el, 120)}
+                  onClick={() => setIsOpen(false)}
                 >
                   Menu
                 </LinkedH>
@@ -91,8 +88,18 @@ const Navbar = () => {
                 <Linked
                   to={"/shop"}
                   className={path.pathname === "/shop" && "active"}
+                  onClick={() => setIsOpen(false)}
                 >
                   Shop
+                </Linked>
+              </li>
+              <li>
+                <Linked
+                  to={"/checkorder"}
+                  className={path.pathname === "/checkorder" && "active"}
+                  onClick={() => setIsOpen(false)}
+                >
+                  Check Orders
                 </Linked>
               </li>
               <li>
@@ -104,6 +111,7 @@ const Navbar = () => {
                     "active"
                   }
                   scroll={(el) => scrollWithOffset(el, 100)}
+                  onClick={() => setIsOpen(false)}
                 >
                   Contact us
                 </LinkedH>
@@ -120,7 +128,13 @@ const Navbar = () => {
                 <AiOutlineShoppingCart color="grey" size={"25px"} />
               </Cart>
             </div>
-            <div onClick={() => navigate("/shop")}>
+
+            <div
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/shop");
+              }}
+            >
               <Button
                 text={"Book Now"}
                 filled

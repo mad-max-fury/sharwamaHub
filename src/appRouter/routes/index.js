@@ -6,9 +6,12 @@ import { MdGrading } from "react-icons/md";
 import { SiMarketo } from "react-icons/si";
 import { MdOutlineLogout } from "react-icons/md";
 import { Orders, OverviewPage, Products } from "../../pages/dashboard";
+import { CheckOrder } from "../../pages/checkorder";
 
 const authRoutes = [
+  { name: "Check orders", path: "/checkorder", element: <CheckOrder /> },
   { name: "shop", path: "/shop", element: <Shop /> },
+
   { name: "signIn", path: "/Admin/auth/signin", element: <Login /> },
   { name: "home", path: "/", element: <LandingPage /> },
 ];

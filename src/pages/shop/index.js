@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../colors";
 import { GoToTop, ProductCard } from "../../components";
@@ -9,6 +9,7 @@ import {
   getProductsError,
   getProductsLoading,
 } from "../../features/product/productslice";
+import { PuffLoader } from "react-spinners";
 
 const Shop = () => {
   const category = useSelector(getAllCategory);
@@ -25,34 +26,68 @@ const Shop = () => {
   const more = products[0]?.more;
 
   const tabsContent = [sharwarma, burger, sandwich, Popcorn, smoothie, more];
+  const [isloading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   return (
     <>
-      <ShowCaseWraps>
-        <MButtonWrap>
-          {[...category].map((item, i) => (
-            <MButton
-              key={i}
-              className={i === tabs ? "active" : null}
-              onClick={() => setTabs(i)}
-            >
-              {item}
-            </MButton>
-          ))}
-        </MButtonWrap>
-        <ShowCaseItem>
-          {loading ? (
-            <div>Loading...</div>
-          ) : error ? (
-            <div>Error</div>
-          ) : (
-            tabsContent[tabs]?.map((item) => {
-              return <ProductCard key={item.id} product={item} addToCartI />;
-            })
-          )}
-        </ShowCaseItem>
-      </ShowCaseWraps>
-      <GoToTop />
+      {isloading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "80vh",
+            width: "100%",
+          }}
+        >
+          <PuffLoader
+            color={colors.primary}
+            loading={isloading}
+            cssOverride={{
+              display: "block",
+              margin: "0 auto",
+              borderColor: "red",
+            }}
+            size={150}
+          />
+        </div>
+      ) : (
+        <>
+          <ShowCaseWraps>
+            <MButtonWrap>
+              {[...category].map((item, i) => (
+                <MButton
+                  key={i}
+                  className={i === tabs ? "active" : null}
+                  onClick={() => setTabs(i)}
+                >
+                  {item}
+                </MButton>
+              ))}
+            </MButtonWrap>
+            <ShowCaseItem>
+              {loading ? (
+                <div>Loading...</div>
+              ) : error ? (
+                <div>Error</div>
+              ) : (
+                tabsContent[tabs]?.map((item) => {
+                  return (
+                    <ProductCard key={item.id} product={item} addToCartI />
+                  );
+                })
+              )}
+            </ShowCaseItem>
+          </ShowCaseWraps>
+          <GoToTop />
+        </>
+      )}
     </>
   );
 };

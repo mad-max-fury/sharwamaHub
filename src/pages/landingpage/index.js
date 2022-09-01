@@ -1,6 +1,5 @@
-import React, { useState, CSSProperties, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { PuffLoader } from "react-spinners";
-import sharwamaHub from "../../api";
 import { colors } from "../../colors";
 import {
   GoToTop,
@@ -12,17 +11,12 @@ import {
 } from "../../components";
 const LandingPage = () => {
   //fetching data from the api
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    const response = await sharwamaHub.get("/products");
-    const data = response.data;
-    setData(data);
-    setLoading(false);
-  };
   useEffect(() => {
-    fetchData();
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }, []);
 
   return (

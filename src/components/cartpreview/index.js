@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import sharwamaHub from "../../api";
 import {
   addToCart,
   getCartItems,
@@ -102,7 +101,7 @@ const Form = ({ showModal, setShowModal, amT }) => {
   const cart = useSelector(getCartItems);
   const dispatch = useDispatch();
 
-  const publicKey = "pk_test_7c5122bd456a581f702dfbbb678e93cc7d9d073e";
+  // const publicKey = "pk_live_808e494a7ea9e5fdfaaadc814781a2e18a92f152";
 
   const amount = amT; // Remember, set in kobo!
   const [email, setEmail] = useState("");
@@ -122,8 +121,29 @@ const Form = ({ showModal, setShowModal, amT }) => {
     onSuccess: (event) => handleSuccessPayement(event),
     onClose: (e) => console.log(e),
   };
+  const initiateWhatsApp = (id) => {
+    let message = `Hello, I have placed an order with the following items:`;
+    cart.forEach((item) => {
+      message += `
+      ${item.name} - ${item.quantity}qty - ₦${item.price * item.quantity}`;
+    });
+    message += `
+    *Total*: ${amT / 100}
+    *Name*: ${username}
+    *Address*: ${address}
+    *Phone*: ${phone}
+    *Email*: ${email}
+    *OrderId*: ${id}
+    `;
+    const url = `https://wa.me/2349160359650?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(url, "_self");
+    dispatch(emptyCart());
+  };
   const handleSuccessPayement = async (e) => {
-    const { reference, status, message } = e;
+    const { reference } = e;
     toast.loading("verifying payment");
     setMakingReq(true);
     try {
@@ -131,17 +151,22 @@ const Form = ({ showModal, setShowModal, amT }) => {
         "https://api.sharwamahub.com/api/v1/orders",
         {
           transaction_id: reference,
-          orders: [...cart].map(({ id, name, quantity, price }) => {
-            return { name, quantity, amount: quantity * price };
+          orders: [...cart].map(({ id, name, quantity, price, image }) => {
+            return {
+              name,
+              quantity,
+              amount: quantity * price,
+              photo: image,
+            };
           }),
           user: {
             name: username,
             address,
             phonenumber: `+234${phone.substring(1, phone.length)}`,
           },
+          photo: null,
         }
       );
-      dispatch(emptyCart());
       setEmail("");
       setName("");
       setAddress("");
@@ -149,8 +174,13 @@ const Form = ({ showModal, setShowModal, amT }) => {
       setShowModal(!showModal);
       setMakingReq(false);
       toast.dismiss();
-      toast.success(res?.data?.message + ", check your message");
-    } catch {}
+      toast.success(res?.data?.message + ", check your message for details");
+      initiateWhatsApp(reference);
+    } catch {
+      setMakingReq(false);
+      toast.dismiss();
+      alert(`here is your transaction id ${reference}`);
+    }
   };
   return (
     <Wrap showModal={showModal}>
